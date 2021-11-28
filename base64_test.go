@@ -48,3 +48,11 @@ func TestGetChar(t *testing.T) {
 		t.Fail()
 	}
 }
+func TestGetCharPosition(t *testing.T) {
+	charByte := []byte("D")
+	var result uint = 3
+
+	if result != getPosition(charByte[0]) {
+		t.Fail()
+	}
+}
