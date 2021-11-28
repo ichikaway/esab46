@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 var VERSION = "0.0.1"
@@ -110,6 +111,16 @@ func base64encode(originText string) string {
  * https://ja.wikipedia.org/wiki/Base64
  */
 func getChar(position uint) byte {
-	encodeCharList := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	encodeCharList := getEncodeCharList()
 	return encodeCharList[position]
+}
+
+func getPosition(charByte byte) uint {
+	encodeCharList := getEncodeCharList()
+	return uint(strings.IndexByte(encodeCharList, charByte))
+}
+
+func getEncodeCharList() string {
+	encodeCharList := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	return encodeCharList
 }
