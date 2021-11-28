@@ -31,6 +31,15 @@ func TestBase64EncodeOver2Char(t *testing.T) {
 	}
 }
 
+func TestBase64EncodeReturnCode(t *testing.T) {
+	var input string = "ABCDEFGH\r\naaa"
+	var answer string = "QUJDREVGR0gNCmFhYQ=="
+	result := base64encode(input)
+	if result != answer {
+		t.Fail()
+	}
+}
+
 func TestGetChar(t *testing.T) {
 	var position uint = 3
 	var result string = "D"
