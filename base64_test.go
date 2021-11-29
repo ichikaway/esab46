@@ -56,3 +56,12 @@ func TestGetCharPosition(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestBase64DecodeNoOver(t *testing.T) {
+	var input string = "QUJDREVG"
+	var answer string = "ABCDEF"
+	result := base64decode(input)
+	if result != answer {
+		t.Fail()
+	}
+}

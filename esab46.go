@@ -23,6 +23,37 @@ func main() {
 	fmt.Println(base64encode(originText))
 }
 
+/**
+ * 4文字ずつ切り出し, 文字を6bit x 4に変換, 8bit x 3に分割
+ * 最後のブロックは==で終わっていれば12bit切り出して8bit x 1を取得
+ * = で終わっていれば 18bit切り出して8bit x 2を取得
+ */
+func base64decode(encodeText string) string {
+	encodeTextByteList := []byte(encodeText)
+
+	//元の文字列のバイト配列でどこまで読み込みしたかのindex
+	var encodeTextIndex int
+
+	var resultByte []byte
+
+	for encodeTextIndex = 0; encodeTextIndex < len(encodeTextByteList); encodeTextIndex += 4 {
+		first := getPosition(encodeTextByteList[encodeTextIndex])
+		second := getPosition(encodeTextByteList[encodeTextIndex+1])
+		third := getPosition(encodeTextByteList[encodeTextIndex+2])
+		fourth := getPosition(encodeTextByteList[encodeTextIndex+3])
+		bit24 := first<<18 | second<<12 | third<<6 | fourth
+
+		firstByte := (bit24 >> 16) & 0b11111111
+		secondByte := (bit24 >> 8) & 0b11111111
+		thirdByte := (bit24 >> 0) & 0b11111111
+
+		resultByte = append(resultByte, byte(firstByte))
+		resultByte = append(resultByte, byte(secondByte))
+		resultByte = append(resultByte, byte(thirdByte))
+	}
+	return string(resultByte)
+}
+
 func base64encode(originText string) string {
 	originTextByteList := []byte(originText)
 
