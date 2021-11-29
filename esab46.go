@@ -36,12 +36,13 @@ func base64decode(encodeText string) string {
 
 	var resultByte []byte
 
-	for encodeTextIndex = 0; encodeTextIndex < len(encodeTextByteList); encodeTextIndex += 4 {
+	if (len(encodeTextByteList) - 4) <= 0 {
+		return encodeText
+	}
+
+	//最後の4文字はパディングで == が入るかもしれないため、最後の4文字の手前までをデコード
+	for encodeTextIndex = 0; encodeTextIndex < len(encodeTextByteList)-4; encodeTextIndex += 4 {
 		//エンコードした文字を1つ取り出し、文字から0-64の間の数字に変換（エンコード時の6bitの数字）
-		first := getPosition(encodeTextByteList[encodeTextIndex])
-		second := getPosition(encodeTextByteList[encodeTextIndex+1])
-		third := getPosition(encodeTextByteList[encodeTextIndex+2])
-		fourth := getPosition(encodeTextByteList[encodeTextIndex+3])
 		first, second, third, fourth := getPositionFromEncodeTextByteList(encodeTextByteList, encodeTextIndex)
 
 		//4つの数字を6bitずつシフトしてorで連結して24bitの連続したバイナリにする
@@ -55,6 +56,42 @@ func base64decode(encodeText string) string {
 		resultByte = append(resultByte, byte(firstByte))
 		resultByte = append(resultByte, byte(secondByte))
 		resultByte = append(resultByte, byte(thirdByte))
+	}
+
+	//エンコードした文字を1つ取り出し、文字から0-64の間の数字に変換（エンコード時の6bitの数字）
+	first, second, third, fourth := getPositionFromEncodeTextByteList(encodeTextByteList, encodeTextIndex)
+
+	// 最後が =で終わらない場合
+	if getPosition(encodeTextByteList[encodeTextIndex+3]) >= 0 {
+		//4つの数字を6bitずつシフトしてorで連結して24bitの連続したバイナリにする
+		bit24 := first<<18 | second<<12 | third<<6 | fourth
+
+		//24bitの中から8bitずつ切り出して、AND 1byteして1バイトずつ先頭から取得していく
+		firstByte := (bit24 >> 16) & 0b11111111
+		secondByte := (bit24 >> 8) & 0b11111111
+		thirdByte := (bit24 >> 0) & 0b11111111
+
+		resultByte = append(resultByte, byte(firstByte))
+		resultByte = append(resultByte, byte(secondByte))
+		resultByte = append(resultByte, byte(thirdByte))
+	}
+
+	// 最後が == の場合
+	// XX==なので最初の2文字のみ利用。2文字を6bitx2にして、最初の8bit(1byte)を取得してデコード
+	if getPosition(encodeTextByteList[encodeTextIndex+3]) == -1 && getPosition(encodeTextByteList[encodeTextIndex+2]) == -1 {
+		bit24 := first<<18 | second<<12 //必要な値だけシフトして24bit作成。下位12bitは0になっていて使わない
+		firstByte := (bit24 >> 16) & 0b11111111
+		resultByte = append(resultByte, byte(firstByte))
+	}
+	// 最後が = 1文字の場合
+	// XXX=なので最初の3文字のみ利用。3文字を6bitx3にして、最初の8bit(1byte)x2を取得してデコード
+	if getPosition(encodeTextByteList[encodeTextIndex+3]) == -1 && getPosition(encodeTextByteList[encodeTextIndex+2]) >= 0 {
+		bit24 := first<<18 | second<<12 | third<<6 //必要な値だけシフトして24bit作成。下位6bitは0になっていて使わない
+		firstByte := (bit24 >> 16) & 0b11111111
+		secondByte := (bit24 >> 8) & 0b11111111
+
+		resultByte = append(resultByte, byte(firstByte))
+		resultByte = append(resultByte, byte(secondByte))
 	}
 	return string(resultByte)
 }
