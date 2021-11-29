@@ -50,7 +50,15 @@ func TestGetChar(t *testing.T) {
 }
 func TestGetCharPosition(t *testing.T) {
 	charByte := []byte("D")
-	var result uint = 3
+	var result int = 3
+
+	if result != getPosition(charByte[0]) {
+		t.Fail()
+	}
+}
+func TestGetCharPositionNoHit(t *testing.T) {
+	charByte := []byte("=")
+	var result int = -1
 
 	if result != getPosition(charByte[0]) {
 		t.Fail()

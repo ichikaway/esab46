@@ -149,9 +149,9 @@ func getChar(position uint) byte {
 	return encodeCharList[position]
 }
 
-func getPosition(charByte byte) uint {
+func getPosition(charByte byte) int {
 	encodeCharList := getEncodeCharList()
-	return uint(strings.IndexByte(encodeCharList, charByte))
+	return strings.IndexByte(encodeCharList, charByte)
 }
 
 func getEncodeCharList() string {
