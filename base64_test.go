@@ -65,3 +65,20 @@ func TestBase64DecodeNoOver(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestBase64DecodeOver1Char(t *testing.T) {
+	var input string = "QUJDREVGRw=="
+	var answer string = "ABCDEFG"
+	result := base64decode(input)
+	if result != answer {
+		t.Fail()
+	}
+}
+func TestBase64decodeOver2Char(t *testing.T) {
+	var input string = "QUJDREVGR0g="
+	var answer string = "ABCDEFGH"
+	result := base64decode(input)
+	if result != answer {
+		t.Fail()
+	}
+}
