@@ -42,6 +42,8 @@ func base64decode(encodeText string) string {
 		second := getPosition(encodeTextByteList[encodeTextIndex+1])
 		third := getPosition(encodeTextByteList[encodeTextIndex+2])
 		fourth := getPosition(encodeTextByteList[encodeTextIndex+3])
+		first, second, third, fourth := getPositionFromEncodeTextByteList(encodeTextByteList, encodeTextIndex)
+
 		//4つの数字を6bitずつシフトしてorで連結して24bitの連続したバイナリにする
 		bit24 := first<<18 | second<<12 | third<<6 | fourth
 
@@ -55,6 +57,17 @@ func base64decode(encodeText string) string {
 		resultByte = append(resultByte, byte(thirdByte))
 	}
 	return string(resultByte)
+}
+
+/**
+ * エンコード済みの文字列のバイト配列から、4文字のエンコード表の番号indexを取得
+ */
+func getPositionFromEncodeTextByteList(encodeTextByteList []byte, encodeTextIndex int) (int, int, int, int) {
+	first := getPosition(encodeTextByteList[encodeTextIndex])
+	second := getPosition(encodeTextByteList[encodeTextIndex+1])
+	third := getPosition(encodeTextByteList[encodeTextIndex+2])
+	fourth := getPosition(encodeTextByteList[encodeTextIndex+3])
+	return first, second, third, fourth
 }
 
 func base64encode(originText string) string {
