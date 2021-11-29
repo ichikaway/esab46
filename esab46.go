@@ -37,12 +37,15 @@ func base64decode(encodeText string) string {
 	var resultByte []byte
 
 	for encodeTextIndex = 0; encodeTextIndex < len(encodeTextByteList); encodeTextIndex += 4 {
+		//エンコードした文字を1つ取り出し、文字から0-64の間の数字に変換（エンコード時の6bitの数字）
 		first := getPosition(encodeTextByteList[encodeTextIndex])
 		second := getPosition(encodeTextByteList[encodeTextIndex+1])
 		third := getPosition(encodeTextByteList[encodeTextIndex+2])
 		fourth := getPosition(encodeTextByteList[encodeTextIndex+3])
+		//4つの数字を6bitずつシフトしてorで連結して24bitの連続したバイナリにする
 		bit24 := first<<18 | second<<12 | third<<6 | fourth
 
+		//24bitの中から8bitずつ切り出して、AND 1byteして1バイトずつ先頭から取得していく
 		firstByte := (bit24 >> 16) & 0b11111111
 		secondByte := (bit24 >> 8) & 0b11111111
 		thirdByte := (bit24 >> 0) & 0b11111111
